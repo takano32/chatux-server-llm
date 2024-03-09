@@ -36,6 +36,8 @@ if (!(Test-Path -PathType Leaf -Path $python_embedded_package)) {
 if (!(Test-Path -PathType Container -Path $python_prefix)) {
     Expand-Archive -Force -DestinationPath $python_prefix -Path $python_embedded_package
     Add-Content -Path "$python_prefix/*._pth" -Value "import site"
+    # chatux-server-llmのあるディレクトリからモジュールをロードできるようにする
+    Add-Content -Path "$python_prefix/*._pth" -Value $chatux_prefix
 }
 
 # pipが使えるようにする
@@ -54,10 +56,15 @@ if (!(Test-Path -PathType Container -Path $chatux_prefix)) {
 & $python -m pip install -r "$chatux_prefix/requirements.txt"
 
 # モデルファイルをダウンロードする
-# Copy-Item -Path "C:\opt\ELYZA-japanese-Llama-2-7b-fast-instruct-q4_K_M.gguf" -Destination $model_path
+Copy-Item -Path "C:\opt\ELYZA-japanese-Llama-2-7b-fast-instruct-q4_K_M.gguf" -Destination $model_path
 if (!(Test-Path -PathType Leaf -Path $model_path)) {
     Invoke-WebRequest -OutFile $model_path -Uri $model_uri
 }
+
+# インストールできたら次の操作をすれば動く。
+# 変数は実際のパス文字列に置き換えること。
+# > cd $chatux_prefix
+# > & $python main.py
 
 $VerbosePreference = 'SilentlyContinue'
 $ErrorActionPreference = 'Continue'
