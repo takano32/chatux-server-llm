@@ -1,11 +1,34 @@
+<#PSScriptInfo
+.VERSION 0.5
+
+.AUTHOR elderica
+
+.LICENSEURI https://opensource.org/license/mit
+#>
+
+<#
+.DESCRIPTION
+ これは、Windowsマシンにchatux-server-llm(https://github.com/sotokisehiro/chatux-server-llm)をインストールするPowerShellスクリプトです。
+ PowerShell 7.4.1で動作確認しています。
+
+ このスクリプトを使う前にビルドツールとして、Git、Visual Studio BuildTools 2022、CMakeをインストールしてください。
+ BuildToolsの代わりにVisual Studio 2022を使うこともできます。
+ 例えばwingetを使って次のようにインストールします。
+ > winget install Git.Git Microsoft.VisualStudio.2022.BuildTools Kitware.CMake
+ wingetを使ってビルドツールをインストールしたら、PowerShellを再起動してください。
+ このスクリプトを次のように起動することで、chatux-server-llmをインストールできます。
+ > . ./Install-Chatux.ps1
+
+ chatux-server-llmをインストールできたら、次の操作をすれば動かせます。
+ 変数は実際のパス文字列に置き換えてください。
+ > cd $chatux_prefix
+ > & $python main.py
+#>
+
 Start-Transcript
 Set-StrictMode -Version 3.0 -Verbose
 $ErrorActionPreference = 'Stop'
 $VerbosePreference = 'Continue'
-
-# 事前に依存関係をインストールしておく
-# winget install Microsoft.VisualStudio.2022.Community
-# winget install Git.Git
 
 $prefix = "C:\opt\chatux"
 
@@ -56,15 +79,10 @@ if (!(Test-Path -PathType Container -Path $chatux_prefix)) {
 & $python -m pip install -r "$chatux_prefix/requirements.txt"
 
 # モデルファイルをダウンロードする
-Copy-Item -Path "C:\opt\ELYZA-japanese-Llama-2-7b-fast-instruct-q4_K_M.gguf" -Destination $model_path
+# Copy-Item -Path "C:\opt\ELYZA-japanese-Llama-2-7b-fast-instruct-q4_K_M.gguf" -Destination $model_path
 if (!(Test-Path -PathType Leaf -Path $model_path)) {
     Invoke-WebRequest -OutFile $model_path -Uri $model_uri
 }
-
-# インストールできたら次の操作をすれば動く。
-# 変数は実際のパス文字列に置き換えること。
-# > cd $chatux_prefix
-# > & $python main.py
 
 $VerbosePreference = 'SilentlyContinue'
 $ErrorActionPreference = 'Continue'
