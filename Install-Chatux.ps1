@@ -50,6 +50,7 @@ if (!(Test-Path -PathType Container -Path $chatux_prefix)) {
 }
 
 # chatux-server-llmの依存関係をインストールする
+& $python -m pip install scikit-build-core pyproject-metadata pathspec
 & $python -m pip install -r "$chatux_prefix/requirements.txt"
 
 # モデルファイルをダウンロードする
